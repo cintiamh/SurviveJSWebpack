@@ -15,6 +15,22 @@ When you bundle a project through webpack, it traverses through imports, constru
 
 It's possible to define **split points** generating separate bundles within the project code itself.
 
+**Hot Module Replacement** (HMR) helped to popularize webpack.
+
+Webpack can generate **hashes** for filenames.
+
+### Setting up the project
+
+Make sure you have a recent version of Node.
+
+Create a project and a `package.json` file.
+
+```
+$ mkdir webpack-demo
+$ cd webpack-demo
+$ npm init -y
+```
+
 ## Automatic Browser Refresh
 
 ## Linting JavaScript
