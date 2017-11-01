@@ -244,6 +244,20 @@ module.exports = (env) => {
 
 ### Accessing the development server from network
 
+Find your ip:
+```
+$ ifconfig | grep inet
+```
+
+### Alternate ways to use webpack-dev-server
+
+* https://webpack.js.org/guides/development/#using-webpack-dev-middleware
+* https://www.npmjs.com/package/webpack-hot-middleware
+
+### Other features of webpack-dev-server
+
+https://webpack.js.org/configuration/dev-server/
+
 ## Linting JavaScript
 
 ## Composing Configuration
