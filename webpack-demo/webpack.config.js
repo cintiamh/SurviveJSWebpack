@@ -6,7 +6,7 @@ const PATHS = {
   build: path.join(__dirname, 'build')
 };
 
-module.exports = {
+const commonConfig = {
   entry: {
     app: PATHS.app,
   },
@@ -20,3 +20,29 @@ module.exports = {
     }),
   ],
 };
+
+const productionConfig = () => commonConfig;
+
+const developmentConfig = () => {
+  const config = {
+    devServer: {
+      historyApiFallback: true,
+      // output errors only
+      stats: 'errors-only',
+      host: process.env.HOST, // defaults to localhost
+      port: process.env.PORT, // defaults to 8080
+    },
+  };
+  return Object.assign(
+    {},
+    commonConfig,
+    config
+  );
+};
+
+module.exports = (env) => {
+  if (env === 'production') {
+    return productionConfig();
+  }
+  return developmentConfig();
+}

@@ -136,6 +136,114 @@ $ npm run build
 
 ## Automatic Browser Refresh
 
+### Webpack `watch` mode and `webpack-dev-server`
+
+Watch mode:
+```
+$ webpack --watch
+```
+
+`webpack-dev-server` (WDS) is built on top of `watch` mode and it even goes further.
+
+WDS is a development server running **in-memory**.
+
+WDS refreshes content automatically in the browser while you develop your application.
+
+WDS supports **Hot Module Replacement** (HMR). HMR allows patching the browser state without a full refresh, keeping the current state (in React).
+
+### Emitting files from WDS
+
+Sometimes it is good to emit files to the file system. Specially when you are integrating with another server that expects to find files.
+
+### Getting started with WDS
+
+```
+$ npm i webpack-dev-server --save-dev
+```
+
+### Attaching WDS to the project
+
+Update package.json
+```
+"scripts": {
+  "start": "webpack-dev-server --env development",
+  "build": "webpack --env production"
+},
+```
+
+Now you should be able to run
+```
+$ npm run start
+```
+
+And see `http://localhost:8080/`.
+
+### Verifying that `--env` works
+
+Update webpack.config.js:
+```javascript
+// ...
+
+const commonConfig = {
+  entry: {
+    app: PATHS.app,
+  },
+  output: {
+    path: PATHS.build,
+    filename: '[name].js',
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'Webpack demo',
+    }),
+  ],
+};
+
+module.exports = (env) => {
+  console.log('env', env);
+  return commonConfig;
+}
+```
+
+### Configuring WDS through webpack configuration
+
+To customize WDS functionality define a `devServer` field at webpack configuration.
+
+webpack.config.js
+```javascript
+const productionConfig = () => commonConfig;
+
+const developmentConfig = () => {
+  const config = {
+    devServer: {
+      historyApiFallback: true,
+      // output errors only
+      stats: 'errors-only',
+      host: process.env.HOST, // defaults to localhost
+      port: process.env.PORT, // defaults to 8080
+    },
+  };
+  return Object.assign(
+    {},
+    commonConfig,
+    config
+  );
+};
+
+module.exports = (env) => {
+  if (env === 'production') {
+    return productionConfig();
+  }
+  return developmentConfig();
+}
+```
+
+### Enabling Hot Module Replacement
+
+**Read from Appendices later**
+
+### Accessing the development server from network
+
 ## Linting JavaScript
 
 ## Composing Configuration
