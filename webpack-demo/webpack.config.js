@@ -31,7 +31,23 @@ const developmentConfig = () => {
       stats: 'errors-only',
       host: process.env.HOST, // defaults to localhost
       port: process.env.PORT, // defaults to 8080
+      overlay: {
+        errors: true,
+        warnings: true,
+      }
     },
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          enforce: 'pre',
+          loader: 'eslint-loader',
+          options: {
+            emitWarning: true
+          }
+        }
+      ]
+    }
   };
   return Object.assign(
     {},

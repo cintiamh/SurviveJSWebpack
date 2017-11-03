@@ -260,4 +260,75 @@ https://webpack.js.org/configuration/dev-server/
 
 ## Linting JavaScript
 
+### Brief introduction to ESLint
+
+* JSLint - Douglas Crockford - very opiniated
+* JSHint: allowed more customization
+* ESLint: newest
+
+#### Eslint is customizable
+
+* works with JSX
+* Babel specific parser
+* rules are documented and you can customize severity
+
+#### eslint-config-airbnb
+
+eslint-config-airbnb is a popular preset.
+
+#### eslint-config-cleanjs
+
+eslint-config-cleanjs use ESLint to restrict JavaScript to a purely functional subset.
+
+### Linting is about more than catching issues
+
+Linting does NOT replace proper testing, but it can complement testing approaches.
+
+### Setting up ESLint
+
+#### autofixing
+
+It allows you to perform certain rule fixes automatically. Use `--fix` flag to activate it.
+
+You can do something similar iwth `js-beautify`.
+
+#### Connecting ESLint with package.json
+
+```
+$ npm i eslint --save-dev
+$ ./node_modules/.bin/eslint --init
+```
+
+This process should install any dependency and create a `.eslintrc.js` file with the rules you chose.
+
+#### Connecting ESLint with webpack
+
+```
+$ npm i eslint-loader --save-dev
+```
+
+webpack.config.js:
+```javascript
+const developmentConfig = () => {
+  const config = {
+    // ...
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          enforce: 'pre',
+          loader: 'eslint-loader',
+          options: {
+            emitWarning: true
+          }
+        }
+      ]
+    }
+  };
+  // ...
+};
+```
+
+#### Enabling Error overlay
+
 ## Composing Configuration
