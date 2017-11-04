@@ -316,11 +316,8 @@ const developmentConfig = () => {
       rules: [
         {
           test: /\.js$/,
-          enforce: 'pre',
+          exclude: /node_modules/,
           loader: 'eslint-loader',
-          options: {
-            emitWarning: true
-          }
         }
       ]
     }
@@ -329,6 +326,33 @@ const developmentConfig = () => {
 };
 ```
 
+A loader is connected to webpack through a rule that contains preconditions related to it and reference to the loader itself.
+
 #### Enabling Error overlay
 
+```javascript
+devServer: {
+  historyApiFallback: true,
+  overlay: {
+    errors: true,
+    warnings: true,
+  }
+},
+```
+
 ## Composing Configuration
+
+### Possible ways to manage configuration
+
+* Maintain configuration in multiple files for each environment and point webpack to each through the --config parameter, sharing configuration through module imports.
+* Push configuration to a library, which you then consume.
+* Maintain all configuration within a single field and branch there and by relying on the --env parameter.
+
+### Composing configuration by merging
+
+`webpack-merge`
+* concatenates arrays
+* merges objects
+...instead of overriding them
+
+### Setting up webpack-merge
