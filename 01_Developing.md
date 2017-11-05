@@ -356,3 +356,10 @@ devServer: {
 ...instead of overriding them
 
 ### Setting up webpack-merge
+
+```
+$ npm i webpack-merge --save-dev
+```
+
+* webpack.config.js: higher level configuration
+* webpack.parts.js: configuration parts to consume.
