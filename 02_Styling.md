@@ -59,6 +59,31 @@ const commonConfig = merge([
 ]);
 ```
 
+### Setting up the initial CSS
+
+```
+$ touch app/main.css
+```
+
+app/main.css
+```css
+body {
+    background: cornsilk;
+}
+```
+
+You need to make webpack aware of it.
+
+app/index.js
+```javascript
+import './main.css';
+```
+
+Now, if you try `npm run start` you should see the different background color on localhost:8080.
+
+### Understanding CSS scoping and CSS modules
+
+
 ## Separating CSS
 
 ## Autoprefixing
