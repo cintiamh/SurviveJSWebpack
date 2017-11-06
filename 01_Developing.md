@@ -363,3 +363,87 @@ $ npm i webpack-merge --save-dev
 
 * webpack.config.js: higher level configuration
 * webpack.parts.js: configuration parts to consume.
+
+webpack.parts.js:
+```javascript
+exports.devServer = ({ host, port } = {}) => ({
+  devServer: {
+    historyApiFallback: true,
+    // output errors only
+    stats: 'errors-only',
+    host,
+    port,
+    overlay: {
+      errors: true,
+      warnings: true,
+    }
+  }
+});
+
+exports.lintJavaScript = ({ include, exclude, options }) => ({
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'eslint-loader',
+        options: {
+          // emitWarning: true
+        }
+      }
+    ]
+  }
+});
+```
+
+webpack.config.js:
+```javascript
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const merge = require('webpack-merge');
+
+const parts = require('./webpack.parts');
+
+const PATHS = {
+  app: path.join(__dirname, 'app'),
+  build: path.join(__dirname, 'build')
+};
+
+const commonConfig = {
+  entry: {
+    app: PATHS.app,
+  },
+  output: {
+    path: PATHS.build,
+    filename: '[name].js',
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'Webpack demo',
+    }),
+  ],
+};
+
+const productionConfig = () => merge([]);
+
+const developmentConfig = () => merge([
+  parts.devServer({
+    // Customize host/port here if needed
+    host: process.env.HOST,
+    port: process.env.PORT,
+  })
+]);
+
+module.exports = (env) => {
+  if (env === 'production') {
+    return merge([
+      commonConfig,
+      productionConfig
+    ]);
+  }
+  return merge([
+    commonConfig,
+    developmentConfig
+  ]);
+}
+```

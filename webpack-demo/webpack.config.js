@@ -1,5 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const merge = require('webpack-merge');
+
+const parts = require('./webpack.parts');
 
 const PATHS = {
   app: path.join(__dirname, 'app'),
@@ -21,44 +24,25 @@ const commonConfig = {
   ],
 };
 
-const productionConfig = () => commonConfig;
+const productionConfig = () => merge([]);
 
-const developmentConfig = () => {
-  const config = {
-    devServer: {
-      historyApiFallback: true,
-      // output errors only
-      stats: 'errors-only',
-      host: process.env.HOST, // defaults to localhost
-      port: process.env.PORT, // defaults to 8080
-      overlay: {
-        errors: true,
-        warnings: true,
-      }
-    },
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          loader: 'eslint-loader',
-          options: {
-            // emitWarning: true
-          }
-        }
-      ]
-    }
-  };
-  return Object.assign(
-    {},
-    commonConfig,
-    config
-  );
-};
+const developmentConfig = () => merge([
+  parts.devServer({
+    // Customize host/port here if needed
+    host: process.env.HOST,
+    port: process.env.PORT,
+  })
+]);
 
 module.exports = (env) => {
   if (env === 'production') {
-    return productionConfig();
+    return merge([
+      commonConfig,
+      productionConfig
+    ]);
   }
-  return developmentConfig();
+  return merge([
+    commonConfig,
+    developmentConfig
+  ]);
 }
