@@ -447,3 +447,32 @@ module.exports = (env) => {
   ]);
 }
 ```
+
+### Benefits of composing configuration
+
+* extract common snippets.
+* identify smaller configuration parts to compose.
+* you can manage configuration as a dependency.
+
+### Configuration layouts
+
+* webpack.config.js: higher level configuration
+* webpack.parts.js: lower level and isolates you from webpack specifics.
+
+#### Split per configuration target
+
+* config
+    * webpack.common.js
+    * webpack.development.js
+    * webpack.parts.js
+    * webpack.production.js
+
+#### Split parts per purpose
+
+* config
+    * parts
+        * devserver.js
+        * ...
+        * index.js
+        * javascript.js
+    * other parts...
