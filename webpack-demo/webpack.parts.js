@@ -29,6 +29,15 @@ exports.lintJavaScript = ({ include, exclude, options }) => ({
 
 exports.loadCSS = ({ include, exclude } = {}) => ({
   module: {
+    loaders: [
+      {
+        test: /\.css$/,
+        loader: 'css-loader',
+        options: {
+          modules: true
+        }
+      }
+    ],
     rules: [
       {
         test: /\.css$/,

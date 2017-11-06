@@ -83,6 +83,85 @@ Now, if you try `npm run start` you should see the different background color on
 
 ### Understanding CSS scoping and CSS modules
 
+All CSS rules exist within **global scope**.
+
+[CSS Modules](https://github.com/css-modules/css-modules) introduces **local scope** for every module by adding a hash in their name.
+
+Webpack's `css-loader` supports CSS Modules.
+
+webpack.parts.js
+```javascript
+exports.loadCSS = ({ include, exclude } = {}) => ({
+  module: {
+    loaders: [
+      {
+        test: /\.css$/,
+        loader: 'css-loader',
+        options: {
+          modules: true
+        }
+      }
+    ],
+    // ...
+  },
+});
+```
+
+app/main.css
+```css
+body {
+    background: cornsilk;
+}
+.redButton {
+    background: red;
+}
+```
+
+app/component.js
+```javascript
+import styles from './main.css';
+
+export default (text = 'Hello world') => {
+  const element = document.createElement('div');
+  element.innerHTML = text;
+  element.className = styles.redButton;
+  return element;
+};
+```
+
+#### Using CSS modules with 3rd party libraries and CSS
+
+You should process normal CSS through a separate loader definition without the `modules` option of `css-loader` enabled.
+
+You can solve the problem by processing 3rd party CSS through an `include` definition against `node_modules`.
+
+### Loading Less
+
+```
+$ npm i less-loader --save-dev
+```
+
+Simple config:
+```javascript
+{
+  test: /\.less$/,
+  use: ['style-loader', 'css-loader', 'less-loader'],
+},
+```
+
+### Loading Sass
+
+```
+$ npm i node-sass sass-loader --save-dev
+```
+
+Simple config:
+```javascript
+{
+  test: /\.scss$/,
+  use: ['style-loader', 'css-loader', 'sass-loader'],
+},
+```
 
 ## Separating CSS
 
