@@ -163,7 +163,59 @@ Simple config:
 },
 ```
 
+### Understanding lookups
+
+`css-loader` handles relative imports by default, but it doesn't touch absolute imports.
+
+If you rely on absolute paths, you have to copy the files to your project.
+
+`copy-webpack-plugin` works for this purpose.
+
+#### Processing `css-loader` imports
+
+Use this technique when you import other CSS files from your CSS through the `@import` statement and want to process the imports through specifc loaders.
+
+To process `@import "./variables.sass";`:
+
+```javascript
+{
+  test: /\.css$/,
+  use: [
+    'style-loader',
+    {
+      loader: 'css-loader',
+      options: {
+        importLoaders: 1,
+      },
+    },
+    'sass-loader',
+  ],
+},
+```
+
+#### Loading from `node_modules` directory
+
+```
+@import "~bootstrap/less/bootstrap";
+```
+
+The tilde (`~`) character tells webpack that it's not a relative import as by default. It performs a lookup against `node_modules`.
+
+### Enabling source maps
+
+* Enable `sourceMap` option for `css-loader`.
+* Set `output.publicPath` to an absolute URL pointing to your development server.
+* Enable `sourceMap` for all separated loaders.
+
+### Using Bootstrap
+
+* point to the npm version and perform loader configuration as above.
+* Use the Sass version. You should set `precision` option of `sass-loader` to at least 8.
+* Use `bootstrap-loader`.
+
 ## Separating CSS
+
+
 
 ## Autoprefixing
 
