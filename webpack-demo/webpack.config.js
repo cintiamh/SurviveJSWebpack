@@ -9,20 +9,23 @@ const PATHS = {
   build: path.join(__dirname, 'build')
 };
 
-const commonConfig = {
-  entry: {
-    app: PATHS.app,
+const commonConfig = merge([
+  {
+    entry: {
+      app: PATHS.app,
+    },
+    output: {
+      path: PATHS.build,
+      filename: '[name].js',
+    },
+    plugins: [
+      new HtmlWebpackPlugin({
+        title: 'Webpack demo',
+      }),
+    ],
   },
-  output: {
-    path: PATHS.build,
-    filename: '[name].js',
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: 'Webpack demo',
-    }),
-  ],
-};
+  parts.loadCSS(),
+]);
 
 const productionConfig = () => merge([]);
 
