@@ -464,3 +464,46 @@ You can enable those through the `purifyOptions` field.
 You should use `purifyOptions.whitelist` array to define selectors which it should leave in the result no matter what.
 
 ## Linting CSS
+
+[Stylelint](https://stylelint.io/) is a tool that allows linting.
+It can be used with webpack through `postcss-loader`.
+
+### Connecting Stylelint with package.json
+
+```
+$ npm i stylelint --save-dev
+```
+
+package.json
+```javascript
+"scripts": {
+  // ...
+  "lint:css": "stylelint app/**/*.css"
+}
+```
+
+Create a rule:
+```
+$ touch .stylelintrc
+```
+
+.stylelintrc
+```json
+{
+  "rules": {
+    "color-hex-case": "lower"
+  }
+}
+```
+
+If you change the css to break the rule and then run:
+```
+$ npm run lint:css
+```
+
+You get a warning.
+
+To get less verbose output on error, use:
+```
+$ npm run lint:css --silent
+```
