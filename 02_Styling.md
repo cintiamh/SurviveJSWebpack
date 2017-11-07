@@ -336,6 +336,62 @@ We can bundle CSS files using globbing. But it's not recommended.
 
 ## Autoprefixing
 
+Autoprefixer uses [Can I Use](https://caniuse.com/) service to figure out which rules should be prefixed.
+
+### Setting up autoprefixing
+
+```
+$ npm i postcss-loader autoprefixer --save-dev
+```
+
+webpack.parts.js
+```javascript
+exports.autoprefix = () => ({
+  loader: 'postcss-loader',
+  options: {
+    plugins: () => ([
+      require('autoprefixer')(),
+    ]),
+  },
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = () => merge([
+  parts.extractCSS({
+    use: ['css-loader', parts.autoprefix()],
+  }),
+]);
+```
+
+app/main.css
+```css
+body {
+    background: cornsilk;
+    display: flex;
+}
+```
+
+After running `npm run build`, you should have a resulting app.css:
+```css
+body {
+    background: cornsilk;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+```
+
+If you know what browsers you support, it's possible to set up a `.browserslistrc` file.
+
+.browserslistrc example:
+```
+> 1% # Browser usage over 1%
+Last 2 versions # or last two versions
+IE 8 # or IE 8
+```
+
 ## Eliminating Unused CSS
 
 ## Linting CSS
