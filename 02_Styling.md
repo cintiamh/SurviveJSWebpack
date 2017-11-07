@@ -332,6 +332,8 @@ With this setup you can still benefit from the HMR during development and genera
 
 ### Managing styles outside of JavaScript
 
+We can bundle CSS files using globbing. But it's not recommended.
+
 ## Autoprefixing
 
 ## Eliminating Unused CSS
