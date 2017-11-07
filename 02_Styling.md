@@ -394,4 +394,73 @@ IE 8 # or IE 8
 
 ## Eliminating Unused CSS
 
+[PurifyCSS](https://www.npmjs.com/package/purifycss) is a tool to analyze files to eliminate the portions you aren't using.
+
+### Setting up Pure.css
+
+Pure.css is a CSS library with pre-made styles you can use (smaller version of Bootstrap):
+
+```
+$ npm i purecss --save
+```
+
+app/index.js
+```javascript
+import 'purecss';
+```
+
+app/component.js
+```javascript
+export default (text = 'Hello world') => {
+  const element = document.createElement('div');
+  element.className = 'pure-button';
+  element.innerHTML = text;
+  return element;
+};
+```
+
+Now if you run `npm start` you should see `Hello World` inside a button like shape.
+
+But now, the CSS file grew up a bit.
+
+### Enabling PurifyCSS
+
+```
+$ npm i glob purifycss-webpack purify-css --save-dev
+```
+
+webpack.parts.js
+```javascript
+const PurifyCSSPlugin = require('purifycss-webpack');
+// ...
+exports.purifyCSS = ({ paths }) => ({
+  plugins: [
+    new PurifyCSSPlugin({ paths }),
+  ],
+});
+```
+
+webpack.config.js
+```javascript
+const glob = require('glob');
+// ...
+// The order matters here:
+const productionConfig = () => merge([
+  parts.extractCSS({
+    use: ['css-loader', parts.autoprefix()],
+  }),
+  parts.purifyCSS({
+    paths: glob.sync(`${PATHS.app}/**/*.js`, { nodir: true }),
+  }),
+]);
+```
+
+The size of the build decreased a lot!
+
+PurifyCSS supports additional options including minify.
+
+You can enable those through the `purifyOptions` field.
+
+You should use `purifyOptions.whitelist` array to define selectors which it should leave in the result no matter what.
+
 ## Linting CSS

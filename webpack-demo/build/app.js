@@ -78,6 +78,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_css__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__main_css__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__component__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_purecss__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_purecss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_purecss__);
+
 
 
 
@@ -94,11 +97,17 @@ document.body.appendChild(Object(__WEBPACK_IMPORTED_MODULE_1__component__["a" /*
 
 /* harmony default export */ __webpack_exports__["a"] = ((text = 'Hello world') => {
   const element = document.createElement('div');
+  element.className = 'pure-button';
   element.innerHTML = text;
-  element.className = __WEBPACK_IMPORTED_MODULE_0__main_css___default.a.redButton;
   return element;
 });
 
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);
