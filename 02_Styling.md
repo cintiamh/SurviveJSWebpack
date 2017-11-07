@@ -215,7 +215,122 @@ The tilde (`~`) character tells webpack that it's not a relative import as by de
 
 ## Separating CSS
 
+By default, the CSS gets inlined into the JavaScript.
 
+The current solution doesn't allow to cache CSS.
+
+Webpack provides a means to generate a separate CSS bundles using `ExtractTextPlugin`. It can aggregate multiple CSS files into one.
+
+`ExtractTextPlugin` doesn't work with Hot Module Replacement. It only works for production.
+
+### Setting up `ExtractTextPlugin`
+
+```
+$ npm i extract-text-webpack-plugin --save-dev
+```
+
+* `ExtractTextPlugin` includes a loader.
+* `ExtractTextPlugin.extract` marks the assets to be extracted.
+    * `use`: processes content through use only from initial chuncks by default
+    * `fallback`: it uses fallback for the rest.
+* It doesn't touch any split bundles unless `allChuncks: true` is set.
+
+webpack.parts.js
+```javascript
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+// ...
+exports.extractCSS = ({ include, exclude, use }) => {
+  // Output extracted CSS to a file
+  const plugin = new ExtractTextPlugin({
+    filename: '[name].css',
+  });
+  return {
+    module: {
+      rules: [
+        {
+          test: /\.css$/,
+          include,
+          exclude,
+          use: plugin.extract({
+            use,
+            fallback: 'style-loader',
+          }),
+        },
+      ],
+    },
+    plugins: [plugin],
+  };
+};
+```
+
+If you wanted to output the resulting file to a specific directory:
+```javascript
+filename: 'styles/[name].css'
+```
+
+#### Connecting with configuration
+
+webpack.config.js
+```javascript
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const merge = require('webpack-merge');
+
+const parts = require('./webpack.parts');
+
+const PATHS = {
+  app: path.join(__dirname, 'app'),
+  build: path.join(__dirname, 'build')
+};
+
+const commonConfig = merge([
+  {
+    entry: {
+      app: PATHS.app,
+    },
+    output: {
+      path: PATHS.build,
+      filename: '[name].js',
+    },
+    plugins: [
+      new HtmlWebpackPlugin({
+        title: 'Webpack demo',
+      }),
+    ],
+  },
+]);
+
+const productionConfig = () => merge([
+  parts.extractCSS({ use: 'css-loader' }),
+]);
+
+const developmentConfig = () => merge([
+  parts.devServer({
+    // Customize host/port here if needed
+    host: process.env.HOST,
+    port: process.env.PORT,
+  }),
+  parts.loadCSS(),
+]);
+
+module.exports = (env) => {
+  if (env === 'production') {
+    return merge([
+      commonConfig,
+      productionConfig()
+    ]);
+  }
+  return merge([
+    commonConfig,
+    developmentConfig()
+  ]);
+}
+```
+
+With this setup you can still benefit from the HMR during development and generate a separated css file for production.
+
+### Managing styles outside of JavaScript
 
 ## Autoprefixing
 
