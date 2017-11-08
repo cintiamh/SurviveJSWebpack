@@ -507,3 +507,39 @@ To get less verbose output on error, use:
 ```
 $ npm run lint:css --silent
 ```
+
+### Connecting Stylelint with webpack
+
+```
+$ npm i postcss-loader --save-dev
+```
+
+webpack.parts.js
+```javascript
+exports.lintCSS = ({ include, exclude }) => ({
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        include,
+        exclude,
+        enforce: 'pre',
+        loader: 'postcss-loader',
+        options: {
+          plugins: () => ([
+            require('stylelint')(),
+        ]),
+        },
+      },
+    ],
+  },
+});
+```
+
+Now you should see a warning when you run `npm run build`.
+
+[stylelint-scss](https://www.npmjs.com/package/stylelint-scss) provides a collection of SCSS specific linting rules.
+
+### stylelint-webpack-plugin
+
+[stylelint-webpack-plugin](https://www.npmjs.com/package/stylelint-webpack-plugin) allows you to reach the same result.

@@ -89,3 +89,22 @@ exports.purifyCSS = ({ paths }) => ({
     new PurifyCSSPlugin({ paths }),
   ],
 });
+
+exports.lintCSS = ({ include, exclude }) => ({
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        include,
+        exclude,
+        enforce: 'pre',
+        loader: 'postcss-loader',
+        options: {
+          plugins: () => ([
+            require('stylelint')(),
+        ]),
+        },
+      },
+    ],
+  },
+});
