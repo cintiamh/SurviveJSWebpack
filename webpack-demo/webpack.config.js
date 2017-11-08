@@ -26,6 +26,7 @@ const commonConfig = merge([
     ],
   },
   parts.lintCSS({ include: PATHS.app }),
+  parts.babel(),
 ]);
 
 const productionConfig = () => merge([
