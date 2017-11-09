@@ -201,7 +201,23 @@ This also works with other asset types like fonts.
 * inline small files to JavaScript.
 * generate separate files for the bigger ones.
 
+```
+$ npm i url-loader file-loader --save-dev
+```
 
+```javascript
+{
+  test: /\.(jpg|png|svg)$/,
+  loader:  'url-loader',
+  options: {
+    limit: 25000,
+  }
+}
+```
+
+### Setting up `file-loader`
+
+If you want to skip inlining altogether, you can use `file-loader` directly.
 
 ## Loading Fonts
 
