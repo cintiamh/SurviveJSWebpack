@@ -187,6 +187,22 @@ In the example below `style-loader` is applied only when webpack captures a CSS 
 
 ## Loading Images
 
+Webpack allows you to inline assets by using `url-loader`. 
+It emits your images as base64 strings within your JavaScript bundles.
+The process decreases the number of requests needed while growing the bundle size.
+This is good enough for development.
+
+`file-loader` outputs image files and returns paths to them instead of inlining.
+This also works with other asset types like fonts.
+
+### Setting up `url-loader`
+
+`url-loader` comes with a `limit` option that can be used to defer image generation to `file-loader`
+* inline small files to JavaScript.
+* generate separate files for the bigger ones.
+
+
+
 ## Loading Fonts
 
 ## Loading JavaScript
