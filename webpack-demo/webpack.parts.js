@@ -125,3 +125,19 @@ exports.babel = () => ({
     ]
   }
 });
+
+exports.loadImages = ({ include, exclude, options } = {}) => ({
+  module: {
+    rules: [
+      {
+        test: /\.(jpg|png|svg)$/,
+        include,
+        exclude,
+        use: {
+          loader: 'url-loader',
+          options,
+        },
+      },
+    ],
+  },
+});

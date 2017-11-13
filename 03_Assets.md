@@ -71,7 +71,7 @@ You can use `enforce` as `pre` or `post`.
   // Conditions
   test: /\.js$/,
   include: PATHS.app,
-  
+
   // Actions
   use: 'babel-loader?cacheDirectory,presets[]=es2015',
 }
@@ -83,7 +83,7 @@ Better use `use` with `options` for readability:
   // Conditions
   test: /\.js$/,
   include: PATHS.app,
-  
+
   // Actions
   use: {
     loader: 'babel-loader',
@@ -93,7 +93,7 @@ Better use `use` with `options` for readability:
     }
   }
 }
-``` 
+```
 
 ### Branching at `use` using a function
 
@@ -187,7 +187,7 @@ In the example below `style-loader` is applied only when webpack captures a CSS 
 
 ## Loading Images
 
-Webpack allows you to inline assets by using `url-loader`. 
+Webpack allows you to inline assets by using `url-loader`.
 It emits your images as base64 strings within your JavaScript bundles.
 The process decreases the number of requests needed while growing the bundle size.
 This is good enough for development.
@@ -218,6 +218,113 @@ $ npm i url-loader file-loader --save-dev
 ### Setting up `file-loader`
 
 If you want to skip inlining altogether, you can use `file-loader` directly.
+
+```javascript
+{
+  test: /\.(jpg|png|svg)$/,
+  loader: 'file-loader',
+  options: {
+    name: '[path][name].[hash].[ext]'
+  }
+}
+```
+
+Be careful not to apply both loaders on images at the same time.
+
+### Integrating images to the project
+
+```
+$ npm i file-loader url-loader --save-dev
+```
+
+webpack.parts.js
+```javascript
+exports.loadImages = ({ include, exclude, options } = {}) => ({
+  module: {
+    rules: [
+      {
+        test: /\.(jpg|png|svg)$/,
+        include,
+        exclude,
+        use: {
+          loader: 'url-loader',
+          options,
+        },
+      },
+    ],
+  },
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = () => merge([
+  // ...
+  parts.loadImages({
+    options: {
+      limit: 15000,
+      name: '[name].[ext]',
+    },
+  }),
+]);
+
+const developmentConfig = () => merge([
+  // ...
+  parts.loadImages(),
+]);
+```
+
+app/main.css
+```css
+body {
+    background: cornsilk;
+    background-image: url('./hellokitty.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+}
+```
+
+### Loading svgs
+
+The easiest way to load SVGs is using file-loader:
+
+```javascript
+{
+  test: /\.svg$/,
+  use: 'file-loader',
+}
+```
+
+If you want the raw SVG content you can use `raw-loader`.
+
+`svg-inline-loader` eliminates unnecessary markup from your SVGs.
+
+`svg-sprite-loader` can merge separated SVG files into a single sprite, making it potentially more efficient to load.
+
+`react-svg-loader` emits SVGs as React components.
+
+### Optimizing images
+
+Compress images:
+* `image-webpack-loader`,
+* `svgo-loader` (SVG specific),
+* `imagemin-webpack-plugin`
+
+This type of loader should be applied to the data, so remember to place as the last within `use` listing.
+
+### Utilizing `srcset`
+
+`resize-image-loader` and `responsive-loader` allow you to generate `srcset` compatible collections of images for modern browsers.
+`srcset` gives more control to the browsers over what images to load and when resulting in higher performance.
+
+### Getting image dimensions
+
+`image-size-loader`
+
+### Loading sprites
+
+`webpack-spritesmith` converts provided images into a sprite sheet and sass/less/stylus mixins.
 
 ## Loading Fonts
 
