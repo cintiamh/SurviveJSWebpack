@@ -328,4 +328,148 @@ This type of loader should be applied to the data, so remember to place as the l
 
 ## Loading Fonts
 
+### Choosing one format
+
+If you exclude Opera mini, all browsers support the `.woff` format.
+`.woff2` is widely supported by modern browsers.
+
+Using `file-loader` and `url-loader` just like with images for single format:
+```javascript
+{
+  // Match woff2 in addition to patterns like .woff?v=1.1.1.
+  test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+  loader: 'url-loader',
+  options: {
+    // Limit at 50k. Above that it emits separate files
+    limit: 50000,
+
+    // url-loader sets mimetype if it's passed.
+    // Without this it derives it from the file extension
+    mimetype: 'application/font-woff',
+
+    // Output below fonts directory
+    name: './fonts/[name].[ext]',
+  },
+},
+```
+
+### Supporting multiple formats
+
+Support more browsers, use `file-loader` and forget about inlining.
+
+You get extra requests, but your page looks better in more browsers.
+
+```JavaScript
+{
+  test: /\.(ttf|eot|woff|woff2)$/,
+  loader: 'file-loader',
+  options: {
+    name: 'fonts/[name].[ext]',
+  },
+},
+```
+
+CSS definition order matters. The newer font formats on top:
+```css
+@font-face {
+  font-family: 'myfontfamily';
+  src: url('./fonts/myfontfile.woff2') format('woff2'),
+    url('./fonts/myfontfile.woff') format('woff'),
+    url('./fonts/myfontfile.eot') format('embedded-opentype'),
+    url('./fonts/myfontfile.ttf') format('truetype');
+}
+```
+
+### Manipulating `file-loader` output path and `publicPath`
+
+It's possible to manipulate `publicPath` and override the default per loader definition.
+
+```javascript
+{
+  // Match woff2 in addition to patterns like .woff?v=1.1.1.
+  test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+  loader: 'url-loader',
+  options: {
+    // Limit at 50k. Above that it emits separate files
+    limit: 50000,
+    mimetype: 'application/font-woff',
+
+    // Output below fonts directory
+    name: './fonts/[name].[ext]',
+
+    // Tweak publicPath to fix CSS lookups to take
+    // the directory into account
+    publicPath: '../',
+  },
+},
+```
+
+### Generating font files based on SVGs
+
+`webfonts-loader`: bundles SVG based fonts into a single font file.
+
+### Using font awesome
+
+[Font Awesome](https://www.npmjs.com/package/font-awesome)
+
+#### Integrating font awesome to the project
+
+```
+$ npm i font-awesome --save
+```
+
+app/index.js:
+```javascript
+import 'font-awesome/css/font-awesome.css';
+```
+
+If you run the project now, you should get a list of errors to load font awesome.
+
+#### Implementing webpack configuration
+
+webpack.parts.js
+```javascript
+exports.loadFonts = ({ include, exclude, options } = {}) => ({
+  module: {
+    rules: [
+      {
+        // Capture eot, ttf, woff, and woff2
+        test: /\.(eot|ttf|woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        include,
+        exclude,
+        use: {
+          loader: 'file-loader',
+          options,
+        },
+      },
+    ],
+  },
+});
+```
+
+webpack.config.js
+```javascript
+const commonConfig = merge([
+  // ...
+  parts.loadFonts({
+    options: {
+      name: '[name].[ext]',
+    }
+  }),
+]);
+```
+
+app/component.js
+```javascript
+export default (text = 'Hello world') => {
+  const element = document.createElement('div');
+  // Using Font Awesome
+  element.className = 'fa fa-hand-spock-o fa-1g';
+  element.innerHTML = text;
+  return element;
+};
+```
+
+`font-awesome-loader` allows more customization.
+
 ## Loading JavaScript
