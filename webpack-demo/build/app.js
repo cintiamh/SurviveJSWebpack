@@ -84,6 +84,8 @@ var _component2 = _interopRequireDefault(_component);
 
 __webpack_require__(3);
 
+__webpack_require__(4);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.body.appendChild((0, _component2.default)());
@@ -109,13 +111,19 @@ exports.default = function () {
   var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Hello world';
 
   var element = document.createElement('div');
-  element.className = 'pure-button';
+  element.className = 'fa fa-hand-spock-o fa-1g';
   element.innerHTML = text;
   return element;
 };
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

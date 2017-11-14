@@ -473,3 +473,109 @@ export default (text = 'Hello world') => {
 `font-awesome-loader` allows more customization.
 
 ## Loading JavaScript
+
+### Using Babel with webpack configuration
+
+#### Setting up `babel-loader`
+
+`babel-loader` takes the code and turns it into a format older browsers can understand.
+
+```
+$ npm i babel-loader babel-core --save-dev
+```
+
+webpack.parts.js
+```javascript
+exports.loadJavaScript = ({ include, exclude }) => ({
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        include,
+        exclude,
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true,
+        },
+      },
+    ],
+  },
+});
+```
+
+webpack.config.js
+```javascript
+const commonConfig = merge([
+  // ...
+  parts.loadJavaScript({ include: PATHS.app }),
+]);
+```
+
+We still have to set up `.babelrc`
+
+#### Setting up .babelrc
+
+At a minimum you need `babel-preset-env`. It's a Babel preset that enables the needed plugins based on the environment definition you pass to it.
+
+To make Babel aware of the preset, you need to write a `.babelrc`.
+
+```
+$ npm i babel-preset-env --save-dev
+$ touch .babelrc
+```
+
+.babelrc
+```json
+{
+  "presets": [
+    [
+      "env",
+      {
+        "modules": false,
+        "targets": {
+          "browsers": ["last 2 Chrome versions"]
+        }
+      }
+    ]
+  ]
+}
+```
+
+If you omit the targets definition, `babel-preset-env` compiles to ES5 compatible code.
+
+### Polyfilling features
+
+`babel-preset-env` allows you to use polyfill.
+
+To use it, enable `useBuiltIns: true` and install `babel-polyfill`.
+
+`babel-polyfill` pollutes the global scope.
+
+### Enabling presets and plugins per environment
+
+`env` checks both `NODE_ENV` and `BABEL_ENV`.
+If `BABEL_ENV` is set, it overrides any possible `NODE_ENV`.
+
+.babelrc
+```javascript
+{
+  // ...
+  "env": {
+    "development": {
+      "plugins": [
+        "react-hot-loader/babel"
+      ]
+    }
+  }
+}
+```
+
+It's possible to pass the webpack environment to Babel:
+
+webpack.config.js
+```javascript
+module.exports = (env) => {
+  process.env.BABEL_ENV = env;
+  // ...
+}
+```
