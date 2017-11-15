@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 27);
+/******/ 	return __webpack_require__(__webpack_require__.s = 31);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -266,7 +266,7 @@ process.umask = function() { return 0; };
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
+ * 
  */
 
 function makeEmptyFunction(arg) {
@@ -801,7 +801,7 @@ module.exports = getActiveElement;
  * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
- *
+ * 
  */
 
 /*eslint-disable no-self-compare */
@@ -873,7 +873,7 @@ module.exports = shallowEqual;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
+ * 
  */
 
 var isTextNode = __webpack_require__(19);
@@ -14306,7 +14306,7 @@ function setValueForProperty(node, name, value) {
   }
 
   {
-
+    
   }
 }
 
@@ -14321,7 +14321,7 @@ function setValueForAttribute(node, name, value) {
   }
 
   {
-
+    
   }
 }
 
@@ -18233,74 +18233,18 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
-/* 26 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 27 */
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-__webpack_require__(26);
-
-var _component = __webpack_require__(28);
-
-var _component2 = _interopRequireDefault(_component);
-
-__webpack_require__(29);
-
-__webpack_require__(30);
 
 __webpack_require__(4);
+module.exports = __webpack_require__(17);
 
-__webpack_require__(17);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-document.body.appendChild((0, _component2.default)());
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _main = __webpack_require__(26);
-
-var _main2 = _interopRequireDefault(_main);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function () {
-  var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Hello world';
-
-  var element = document.createElement('div');
-  element.className = 'fa fa-hand-spock-o fa-1g';
-  element.innerHTML = text;
-  return element;
-};
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=app.js.map
+//# sourceMappingURL=vendor.js.map
