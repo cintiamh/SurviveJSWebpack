@@ -196,7 +196,11 @@ Everything should work as before.
 
 Most important `module` properties:
 
-* 
+* `resource`: resource full path.
+* `context`: returns the path to the resource's directory.
+* `rawRequest`: contains the whole unresolved request.
+* `userRequest`: a version of the request that has been resolved to a query.
+* `chunks`: tells in which chunks the module is contained.
 
 ## Code Splitting
 
