@@ -130,6 +130,74 @@ We have to use `CommonsChunkPlugin` to alter this behavior.
 
 ### Setting up `CommonsChunkPlugin`
 
+Implementing `CommonsChunkPlugin` in webpack.config.js:
+```javascript
+const webpack = require('webpack');
+
+const productionConfig = () => merge([
+  {
+    entry: {
+      vendor: ['react', 'react-dom'],
+    },
+    plugins: [
+      new webpack.optimize.CommonsChunkPlugin({
+        name: 'vendor',
+      }),
+    ],
+  },
+  // ...
+]);
+```
+
+The configuration tells the plugin to extract React to a bundle named `vendor`.
+
+Now you if you run `npm run build` you should get a smaller size app.js.
+
+### Abstracting bundle extraction
+
+webpack.parts.js
+```javascript
+const webpack = require('webpack');
+// ...
+exports.extractBundles = (bundles) => ({
+  plugins: bundles.map((bundle) => (
+    new webpack.optimize.CommonsChunkPlugin(bundle)
+  )),
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = () => merge([
+  {
+    entry: {
+      vendor: ['react', 'react-dom'],
+    },
+  },
+  // ...
+  parts.extractBundles([
+    {
+      name: 'vendor'
+    },
+  ]),
+]);
+```
+
+Everything should work as before.
+
+### Loading `dependencies` to a `vendor` bundle automatically
+
+`CommonsChunkPlugin` gives control over its behavior through its `minChunks` options.
+
+`minChunks` accepts a function with a signature `(module, count)`.
+
+* `module`: information about matches modules to deduce which modules are used by the project.
+* `count`: how many times a module has been imported into the project.
+
+Most important `module` properties:
+
+* 
+
 ## Code Splitting
 
 ## Tidying Up

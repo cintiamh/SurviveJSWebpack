@@ -54,6 +54,11 @@ const productionConfig = () => merge([
       name: '[name].[ext]',
     },
   }),
+  parts.extractBundles([
+    {
+      name: 'vendor'
+    },
+  ]),
 ]);
 
 const developmentConfig = () => merge([
