@@ -202,6 +202,21 @@ Most important `module` properties:
 * `userRequest`: a version of the request that has been resolved to a query.
 * `chunks`: tells in which chunks the module is contained.
 
+### Performing more granular split
+
+`CommonsChunkPlugin` operates against all entry chunks by default.
+This behavior can be constrained through the `chunks` option for more granular control.
+
+### `CommonsChunkPlugin children` and `async` flags
+
+* `children`: when set to `true`, webpack detects which modules are the same in the resulting bundles and push them to the parent bundle.
+* `async`: when set to `true`, webpack generates a separate bundle with the commonalities and load it asynchronously from the parent.
+
+### Splitting and merging chunks
+
+* `AggressiveSplittingPlugin`: allows to emit more and smaller bundles.
+* `AggressiveMergingPlugin`: allows to combine too small bundles into bigger ones.
+
 ## Code Splitting
 
 ## Tidying Up
