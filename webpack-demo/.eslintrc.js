@@ -1,3 +1,8 @@
 module.exports = {
-    "extends": "airbnb"
+    "extends": "airbnb",
+    parser: 'babel-eslint',
+    parserOptions: {
+      sourceType: 'module',
+      allowImportExportEverywhere: true,
+    }
 };
