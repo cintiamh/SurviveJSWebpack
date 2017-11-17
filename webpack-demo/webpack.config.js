@@ -36,6 +36,7 @@ const commonConfig = merge([
 ]);
 
 const productionConfig = () => merge([
+  parts.clean(PATHS.build),
   {
     entry: {
       vendor: ['react', 'react-dom'],
@@ -59,6 +60,7 @@ const productionConfig = () => merge([
       name: 'vendor'
     },
   ]),
+  parts.attachRevision(),
 ]);
 
 const developmentConfig = () => merge([

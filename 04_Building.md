@@ -341,4 +341,69 @@ body {
 }
 ```
 
+### Code splitting in React
+
+Example: https://gist.github.com/lencioni/643a78712337d255f5c031bfc81ca4cf
+
 ## Tidying Up
+
+### Cleaning the build directory
+
+#### Setting up `CleanWebpackPlugin`
+
+```
+$ npm i clean-webpack-plugin --save-dev
+```
+
+webpack.parts.js
+```javascript
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+// ...
+exports.clean = (path) => ({
+  plugins: [
+    new CleanWebpackPlugin([path]),
+  ],
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = () => merge([
+  parts.clean(PATHS.build),
+  // ...
+]);
+```
+
+### Attaching a revision to the build
+
+#### Setting up `BannerPlugin` and `GitRevisionPlugin`
+
+```
+$ npm i git-revision-webpack-plugin --save-dev
+```
+
+webpack.parts.js
+```javascript
+const GitRevisionPlugin = require('git-revision-webpack-plugin');
+// ...
+exports.attachRevision = () => ({
+  plugins: [
+    new webpack.BannerPlugin({
+      banner: new GitRevisionPlugin().version(),
+    }),
+  ],
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = () => merge([
+  // ...
+  parts.attachRevision(),
+]);
+```
+
+### Copying files
+
+* copy-webpack-plugin to bring external files to your build.
+* cpy-cli copy outside of webpack in cross-platform way.
