@@ -142,6 +142,12 @@ const productionConfig = () => merge([
 
 ## Tree Shaking
 
+Tree shaking is a feature enabled by the ES2015 module definition.
+
+Analyze the module definition in static way without running it, webpack can tell which parts of the code are being used or not.
+
+### Demonstrating tree shaking
+
 ## Environment Variables
 
 ## Adding Hashes to Filenames
