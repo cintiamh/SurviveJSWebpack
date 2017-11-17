@@ -100,6 +100,46 @@ You can use `posthtml-minifier` to minify your HTML through it.
 $ npm i optimize-css-assets-webpack-plugin cssnano --save-dev
 ```
 
+webpack.parts.js
+```JavaScript
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const cssnano = require('cssnano');
+// ...
+exports.minifyCSS = ({ options }) => ({
+  plugins: [
+    new OptimizeCSSAssetsPlugin({
+      cssProcessor: cssnano,
+      cssProcessorOptions: options,
+      canPrint: false,
+    }),
+  ],
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = () => merge([
+  // ...
+  parts.minifyJavaScript(),
+  parts.minifyCSS({
+    options: {
+      discardComments: {
+        removeAll: true,
+      },
+      // run cssnano in safe mode to avoid unsafe transformations
+      safe: true,
+    },
+  }),
+  // ...
+]);
+```
+
+### Minifying images
+
+* img-loader
+* imagemin-webpack
+* imagemin-webpack-plugin
+
 ## Tree Shaking
 
 ## Environment Variables
