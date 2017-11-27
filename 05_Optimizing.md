@@ -148,7 +148,39 @@ Analyze the module definition in static way without running it, webpack can tell
 
 ### Demonstrating tree shaking
 
+app/shake.js
+```javascript
+const shake = () => console.log("shake");
+const bake = () => console.log("bake");
+
+export { shake, bake };
+```
+
+app/index.js
+```javascript
+import { bake } from './shake';
+
+bake();
+```
+
+Once building, it should only contain bake method and miss the shake method.
+
+### Tree shaking on package level
+
+You have to let webpack to manage ES2015 modules by setting `"modules": false`.
+
+To get most out of tree shaking with external packages, you have to use `babel-plugin-transform-imports` to rewrite imports so that they work with webpack's tree shaking logic.
+
 ## Environment Variables
+
+Since JavaScript minifiers can remove dead code (`if(false)`), you can build on top of this idea for code available only in development mode, for example.
+
+Webpack's `DefinePlugin` enables replacing *free variables* so that you can convert depending on environment:
+```javascript
+if (process.env.NODE_ENV === "development") { ... }
+```
+
+### The basic idea of `DefinePlugin`
 
 ## Adding Hashes to Filenames
 

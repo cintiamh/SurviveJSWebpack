@@ -1,3 +1,3 @@
-/*! 15bf225 */
-webpackJsonp([0],{35:function(o,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),n(36),e.default="Hello from lazy"},36:function(o,e,n){var r=n(37);"string"==typeof r&&(r=[[o.i,r,""]]);var t={hmr:!0};t.transform=void 0;n(34)(r,t);r.locals&&(o.exports=r.locals)},37:function(o,e,n){(o.exports=n(33)(void 0)).push([o.i,"body {\n  color: blue;\n}\n",""])}});
+/*! 6bde3f5 */
+webpackJsonp([0],{36:function(o,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),n(37),e.default="Hello from lazy"},37:function(o,e,n){var r=n(38);"string"==typeof r&&(r=[[o.i,r,""]]);var t={hmr:!0};t.transform=void 0;n(35)(r,t);r.locals&&(o.exports=r.locals)},38:function(o,e,n){(o.exports=n(34)(void 0)).push([o.i,"body {\n  color: blue;\n}\n",""])}});
 //# sourceMappingURL=0.js.map
