@@ -182,6 +182,70 @@ if (process.env.NODE_ENV === "development") { ... }
 
 ### The basic idea of `DefinePlugin`
 
+Elimination is the core idea of `DefinePlugin` and it allows toggling.
+
+A minifier performs analysis and toggles entire portions of the code.
+
+### Setting `process.env.NODE_ENV`
+
+webpack.parts.js
+```JavaScript
+exports.setFreeVariable = (key, value) => {
+  const env = {};
+  env[key] = JSON.stringify(value);
+  return {
+    plugins: [new webpack.DefinePlugin(env)],
+  };
+};
+```
+
+webpack.config.js
+```JavaScript
+const productionConfig = () => merge([
+  // ...
+  parts.setFreeVariable("process.env.NODE_ENV", "production"),
+]);
+```
+
+`webpack.EnvironmentPlugin(["NODE_ENV"])` is a shortcut that allows you to refer to environment variables.
+It uses `DefinePlugin` underneath and you can achieve the same effect by passing `process.env.NODE_ENV`.
+
+### Replacing free variables through Babel
+
+* `babel-plugin-transform-inline-environment-variables`
+* `babel-plugin-transform-define`
+* `babel-plugin-minify-replace`
+
+### Choosing which module to use
+
+`DefinePlugin` based splitting allows you to choose which branch of code to use and which to discard.
+
+```
+- store
+  - index.js
+  - store.dev.js
+  - store.prod.js
+```
+
+You use either `dev` or `prod` version of the store depending on the environment.
+
+```javascript
+if (process.env.NODE_ENV === "production") {
+  module.exports = require('./store.prod');
+} else {
+  module.exports = require("./store.dev");
+}
+```
+
+### Webpack optimization plugins
+
+* `compression-webpack-plugin`: generate compressed files using webpack.
+* `webpack.optimize.UglifyJsPlugin`: minify using different heuristics.
+* `webpack.optimize.AggressiveSplittingPlugin`: split code into smaller bundles.
+* `webpack.optimize.CommonsChunkPlugin`: extract common dependencies into bundles.
+* `webpack.DefinePlugin`: feature flags.
+* `lodash-webpack-plugin`: smaller Lodash builds.
+
 ## Adding Hashes to Filenames
 
 ## Separating Manifest
