@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const merge = require('webpack-merge');
@@ -20,6 +21,7 @@ const commonConfig = merge([
       filename: '[name].js',
     },
     plugins: [
+      new webpack.NamedModulesPlugin(),
       new HtmlWebpackPlugin({
         title: 'Webpack demo',
       }),

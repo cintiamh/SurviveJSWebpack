@@ -337,6 +337,33 @@ exports.extractCSS = ({ include, exclude, use }) => {
 };
 ```
 
+### Enabling `NamedModulesPlugin`
+
+Webpack uses number based IDs for the module code it generates.
+
+* `NamedModulesPlugin`: replaces module IDs with paths to the modules making it ideal for development.
+* `HashedModuleIdsPlugin`: does the same except it hashes the result and hides the path information.
+
+```javascript
+const webpack = require('webpack');
+// ...
+const commonConfig = merge([
+  {
+    // ...
+    plugins: [
+      new webpack.NamedModulesPlugin(),
+      new HtmlWebpackPlugin({
+        title: 'Webpack demo',
+      }),
+    ],
+  },
+  // ...
+]);
+```
+
+If the application changes, it invalidates the vendor bundle as well.
+Next we'll learn how to extract a manifest to resolve the issue.
+
 ## Separating Manifest
 
 ## Analyzing Build Statistics

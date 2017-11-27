@@ -1,3 +1,0 @@
-/*! 37971d8 */
-webpackJsonp([0],{25:function(o,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),n(26),e.default="Hello from lazy"},26:function(o,e,n){var r=n(27);"string"==typeof r&&(r=[[o.i,r,""]]);var t={hmr:!0};t.transform=void 0;n(24)(r,t);r.locals&&(o.exports=r.locals)},27:function(o,e,n){(o.exports=n(23)(void 0)).push([o.i,"body {\n  color: blue;\n}\n",""])}});
-//# sourceMappingURL=0.a07713f4.js.map
