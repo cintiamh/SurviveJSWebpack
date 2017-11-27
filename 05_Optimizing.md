@@ -248,6 +248,95 @@ if (process.env.NODE_ENV === "production") {
 
 ## Adding Hashes to Filenames
 
+To take advantage of client level cache, just include a hash to filenames.
+
+### Placeholders
+
+Webpack provides *placeholders* to attach specific information to webpack output.
+
+* `[path]`: file path
+* `[name]`: file name
+* `[ext]`: extension.
+* `[hash]`: build hash.
+* `[chunkhash]`: entry chunk-specific hash. Each `entry` defined at the configuration receives a hash of its own.
+* `[contenthash]`: hash specific to content. (available for `ExtractTextPlugin` only).
+
+It's preferable to use particularly `hash` and `chunkhash` only for production purposes.
+
+`[chunkhash:8]` => optional
+
+#### Example placeholders
+
+```javascript
+{
+  output: {
+    path: PATHS.build,
+    filename: "[name].[chunkhash].js",
+  },
+},
+```
+
+Output examples:
+```
+app.d587bbd6e38337f5accd.js
+vendor.dc746a5db4ed650296e1.js
+```
+
+### Setting up hashing
+
+* `hash` => Images and fonts
+* `chunkhash` => code chunks
+
+webpack.config.js
+```javascript
+const commonConfig = merge([
+  // ...
+  parts.loadFonts({
+    options: {
+      name: '[name].[hash:8].[ext]',
+    }
+  }),
+  // ...
+]);
+
+const productionConfig = () => merge([
+  {
+    performance: {
+      hints: "warning",
+      maxEntrypointSize: 50000,
+      maxAssetSize: 450000,
+    },
+    output: {
+      chunkFilename: "[name].[chunkhash:8].js",
+      filename: "[name].[chunkhash:8].js",
+    }
+  },
+  // ...
+  parts.loadImages({
+    options: {
+      limit: 15000,
+      name: '[name].[hash:8].[ext]',
+    },
+  }),
+  // ...
+]);
+```
+
+If you use `chunkhash` for the extracted CSS it could lead to problems (since CSS comes from JS).
+
+For CSS, use `contenthash` instead.
+
+webpack.parts.js
+```javascript
+exports.extractCSS = ({ include, exclude, use }) => {
+  // Output extracted CSS to a file
+  const plugin = new ExtractTextPlugin({
+    filename: '[name].[contenthash:8].css',
+  });
+  // ...
+};
+```
+
 ## Separating Manifest
 
 ## Analyzing Build Statistics
