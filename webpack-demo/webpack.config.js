@@ -82,6 +82,10 @@ const productionConfig = () => merge([
     {
       name: 'vendor'
     },
+    {
+      name: 'manifest',
+      minChunks: Infinity,
+    },
   ]),
   parts.attachRevision(),
   parts.setFreeVariable("process.env.NODE_ENV", "production"),

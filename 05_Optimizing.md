@@ -366,6 +366,35 @@ Next we'll learn how to extract a manifest to resolve the issue.
 
 ## Separating Manifest
 
+When webpack write bundles, it maintains a manifest describing what files webpack should load.
+
+If the hashes webpack generates change, then the manifest changes as well.
+
+### Extracting a manifest
+
+webpack.config.js
+```javascript
+const productionConfig = () => merge([
+  // ...
+  parts.extractBundles([
+    {
+      name: 'vendor'
+    },
+    {
+      name: 'manifest',
+      minChunks: Infinity,
+    },
+  ]),
+  // ...
+]);
+```
+
+The name `manifest` is used by convention.
+
+`minChunks` is optional and passing `Infinity` tells webpack not to move any modules to the resulting bundle.
+
+The project has basic caching behavior now. If you try to modify app.js or component.js, the vendor bundle should remain the same.
+
 ## Analyzing Build Statistics
 
 ## Performance
