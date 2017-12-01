@@ -13,9 +13,6 @@ const PATHS = {
 
 const commonConfig = merge([
   {
-    entry: {
-      app: PATHS.app,
-    },
     output: {
       path: PATHS.build,
       filename: '[name].js',
@@ -103,9 +100,22 @@ const developmentConfig = () => merge([
 
 module.exports = (env) => {
   const pages = [
-    parts.page({ title: 'Webpack demo' }),
-    parts.page({ title: 'Another demo', path: 'another' }),
+    parts.page({
+      title: 'Webpack demo',
+      entry: {
+        app: PATHS.app,
+      },
+      chunks: ["app", "manifest", "vendor"],
+    }),
+    parts.page({
+      title: 'Another demo',
+      path: 'another',
+      entry: {
+        another: path.join(PATHS.app, "another.js"),
+      },
+      chunks: ["another", "manifest", "vendor"],
+    }),
   ];
   const config = env === "production" ? productionConfig : developmentConfig;
-  return pages.map(page => merge(commonConfig, config, page));
+  return merge([commonConfig, config].concat(pages));
 }

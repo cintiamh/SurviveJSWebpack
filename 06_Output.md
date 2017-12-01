@@ -2,8 +2,6 @@
 
 * [Build Targets](#build-targets)
 * [Multiple Pages](#multiple-pages)
-* [Bundling Libraries](#bundling-libraries)
-* [Library Output](#library-output)
 * [Server Side Rendering](#server-side-rendering)
 
 ## Build Targets
@@ -103,10 +101,141 @@ module.exports = (env) => {
 }
 ```
 
-## Bundling Libraries
+#### Injecting different script per page
 
-## Library Output
+With the previous example, both pages have the same `entry`.
 
+To solve this, we can move `entry` configuration to a lower level and manage it per page.
 
+```
+$ touch app/another.js
+```
+
+app/another.js
+```javascript
+import './main.css';
+import component from './component';
+
+const demoComponent = component("Another");
+
+document.body.appendChild(demoComponent);
+```
+
+webpack.config.js
+```javascript
+const commonConfig = merge([
+  {
+    // remove entry from here!!!
+  },
+  // ...
+]);
+// ...
+module.exports = (env) => {
+  const pages = [
+    parts.page({
+      title: 'Webpack demo',
+      entry: {
+        app: PATHS.app,
+      },
+    }),
+    parts.page({
+      title: 'Another demo',
+      path: 'another',
+      entry: {
+        another: path.join(PATHS.app, "another.js"),
+      },
+    }),
+  ];
+  const config = env === "production" ? productionConfig : developmentConfig;
+  return pages.map(page => merge(commonConfig, config, page));
+}
+```
+
+webpack.parts.js
+```javascript
+exports.page = ({
+  path = "",
+  template = require.resolve('html-webpack-plugin/default_index.ejs'),
+  title,
+  entry,
+} = {}) => ({
+  entry,
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: `${path && path + "/"}index.html`,
+      template,
+      title,
+    }),
+  ],
+});
+```
+
+### Generating multiple pages while sharing code
+
+#### Adjusting configuration
+
+HtmlWebpackPlugin picks up all chunks by default, so we need to adjust to pick only the chunks that are related to each page.
+
+webpack.config.js
+```javascript
+module.exports = (env) => {
+  const pages = [
+    parts.page({
+      title: 'Webpack demo',
+      entry: {
+        app: PATHS.app,
+      },
+      chunks: ["app", "manifest", "vendor"],
+    }),
+    parts.page({
+      title: 'Another demo',
+      path: 'another',
+      entry: {
+        another: path.join(PATHS.app, "another.js"),
+      },
+      chunks: ["another", "manifest", "vendor"],
+    }),
+  ];
+  const config = env === "production" ? productionConfig : developmentConfig;
+  return merge([commonConfig, config].concat(pages));
+}
+```
+
+webpack.parts.js
+```javascript
+exports.page = ({
+  path = "",
+  template = require.resolve('html-webpack-plugin/default_index.ejs'),
+  title,
+  entry,
+  chunks,
+} = {}) => ({
+  entry,
+  plugins: [
+    new HtmlWebpackPlugin({
+      chunks,
+      filename: `${path && path + "/"}index.html`,
+      template,
+      title,
+    }),
+  ],
+});
+```
+
+Now you should have a single manifest file instead of two.
+
+The manifest runs different code depending on the entry.
+
+### Progressive web applications
+
+Progressive Web Applications (PWA) `webpack-pwa` https://github.com/webpack/webpack-pwa
+
+App shell is loaded initially, and it manages the whole application including its routing.
+
+The total size of the application is larger, but the initial load is faster.
+
+* `offline-plugin`
+* `sw-precache-webpack-plugin`
+* Using Service Workers improves the office experience.
 
 ## Server Side Rendering
