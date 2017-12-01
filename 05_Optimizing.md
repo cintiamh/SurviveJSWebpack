@@ -397,4 +397,89 @@ The project has basic caching behavior now. If you try to modify app.js or compo
 
 ## Analyzing Build Statistics
 
+### Configuring webpack
+
+Set the `--json` flag:
+
+package.json:
+```javascript
+"scripts": {
+  "build:stats": "webpack --env production --json > stats.json",
+},
+```
+
+Other flags:
+* `--profile`: timing-related information.
+* `--progress`: how long webpack spent in different stages of the build.
+
+#### Node API
+
+```javascript
+const webpack = require('webpack');
+const config = require('./webpack.config.js')('production');
+
+webpack(config, (err, stats) => {
+  if (err) {
+    return console.error(err);
+  }
+  if (stats.hasErrors()) {
+    return console.error(stats.toString('errors-only'));
+  }
+  console.log(stats);
+});
+```
+
+Plugins:
+* `StatsWebpackPlugin`
+* `WebpackStatsPlugin`
+
+### Available analysis tools
+
+* The official analyse tool: https://github.com/webpack/analyse
+* Webpack visualizer: https://chrisbateman.github.io/webpack-visualizer/
+* `DuplicatePackageCheckerPlugin`
+* Webpack Chart: https://alexkuz.github.io/webpack-chart/
+* `webpack-unused`
+* Stellar webpack: https://alexkuz.github.io/stellar-webpack/
+* `webpack-bundle-tracker`
+* `webpack-bundle-analyzer`*
+* `webpack-bundle-size-analyzer`
+* `inspectpack`
+* `webpack-runtime-analyzer`
+* Webpack Monitor: http://webpackmonitor.com/
+
+### Duplication analysis
+
+* `bundle-duplicates-plugin`
+* `find-duplicate-dependencies`
+* `depcheck`
+* `bundle-buddy`
+
 ## Performance
+
+Optimizations:
+1. Know what to optimize
+2. Perform fast to implement tweaks first.
+3. Perform more involved tweaks after.
+4. Measure impact.
+
+### High-level optimizations
+
+* `parallel-webpack`: run multiple webpack instances in parallel
+* `HappyPack`: file level parallelism (couples your configuration with it).
+
+### Low-level optimizations
+
+* Use faster source map variants during development or skip them.
+* Use `babel-preset-env` during development.
+* Skip polyfills during development.
+* Disable the portions of the app you don't need during development.
+* Push bundles that change less to Dynamically Loaded Libraries (DLL).
+
+#### Plugin specific optimizations
+
+* caching through `hard-source-webpack-plugin`
+* use lighter laternatives of plugins and loaders during development.
+* use parallel variants of plugins.
+
+#### Loader specific optimizations
