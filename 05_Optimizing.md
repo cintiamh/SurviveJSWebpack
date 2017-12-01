@@ -483,3 +483,12 @@ Optimizations:
 * use parallel variants of plugins.
 
 #### Loader specific optimizations
+
+* Perform less processing by skipping loaders during development.
+* Use either `include` or `exclude` with JavaScript specific loaders.
+* Cache the results of expensive loaders.
+* Parallelize the execution of expensive loaders using `thread-loader`.
+
+### Optimizing rebundling speed during development
+
+Point development setup to a minified version of a library.
