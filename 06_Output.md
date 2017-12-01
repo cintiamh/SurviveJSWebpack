@@ -1,9 +1,9 @@
 # Output
 
 * [Build Targets](#build-targets)
+* [Multiple Pages](#multiple-pages)
 * [Bundling Libraries](#bundling-libraries)
 * [Library Output](#library-output)
-* [Multiple Pages](#multiple-pages)
 * [Server Side Rendering](#server-side-rendering)
 
 ## Build Targets
@@ -42,10 +42,71 @@ The main use case for using the node target is **Server Side Rendering (SSR)**.
 
 `electron-react-boilerplate`: hot loading webpack setup for Electron and React based development.
 
+## Multiple Pages
+
+Generating multiple pages is achievable through `HtmlWebpackPlugin` and a bit of configuration.
+
+### Possible approaches
+
+* Go through the `multi-compiler mode` and return an array of configurations. Separated pages with minimal shared code. You can process it through `parallel-webpack` to improve build performance.
+* Set up a single configuration and extract the commonalities.
+* If you follow the idea of Progressive Web Applications (PWA), you can end up with either an **app shell** or a **page shell** and load portions of the application as it's used.
+
+### Generating multiple pages
+
+#### Abstracting pages
+
+To initialize a page, it should receive page title, output path, and an optional template at least.
+
+webpack.parts.js
+```javascript
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+exports.page = ({
+  path = "",
+  template = require.resolve('html-webpack-plugin/default_index.ejs'),
+  title,
+} = {}) => ({
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: `${path && path + "/"}index.html`,
+      template,
+      title,
+    }),
+  ],
+});
+```
+
+webpack.config.js
+```javascript
+const commonConfig = merge([
+  {
+    entry: {
+      app: PATHS.app,
+    },
+    output: {
+      path: PATHS.build,
+      filename: '[name].js',
+    },
+    // Remove plugins HtmlWebpackPlugin
+  },
+  // ...
+]);
+// ...
+module.exports = (env) => {
+  const pages = [
+    parts.page({ title: 'Webpack demo' }),
+    parts.page({ title: 'Another demo', path: 'another' }),
+  ];
+  const config = env === "production" ? productionConfig : developmentConfig;
+  return pages.map(page => merge(commonConfig, config, page));
+}
+```
+
 ## Bundling Libraries
 
 ## Library Output
 
-## Multiple Pages
+
 
 ## Server Side Rendering

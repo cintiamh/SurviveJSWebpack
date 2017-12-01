@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
 const merge = require('webpack-merge');
 const glob = require('glob');
 
@@ -20,12 +20,6 @@ const commonConfig = merge([
       path: PATHS.build,
       filename: '[name].js',
     },
-    plugins: [
-      new webpack.NamedModulesPlugin(),
-      new HtmlWebpackPlugin({
-        title: 'Webpack demo',
-      }),
-    ],
   },
   parts.lintCSS({ include: PATHS.app }),
   parts.babel(),
@@ -108,14 +102,10 @@ const developmentConfig = () => merge([
 ]);
 
 module.exports = (env) => {
-  if (env === 'production') {
-    return merge([
-      commonConfig,
-      productionConfig()
-    ]);
-  }
-  return merge([
-    commonConfig,
-    developmentConfig()
-  ]);
+  const pages = [
+    parts.page({ title: 'Webpack demo' }),
+    parts.page({ title: 'Another demo', path: 'another' }),
+  ];
+  const config = env === "production" ? productionConfig : developmentConfig;
+  return pages.map(page => merge(commonConfig, config, page));
 }
