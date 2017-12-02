@@ -239,3 +239,198 @@ The total size of the application is larger, but the initial load is faster.
 * Using Service Workers improves the office experience.
 
 ## Server Side Rendering
+
+Server Side Rendering (SSR) you serve a fully rendered HTML page that would make sense even without JavaScript enabled.
+
+Provides potential performance benefits and with Search Engine Optimization (SEO).
+
+https://www.npmjs.com/package/isomorphic-webpack
+
+To demonstrate SSR, you can use webpack to compile a client-side build that then gets picked up by a server that render it using React following the principle.
+
+### Setting up babel with React
+
+More details in "Loading JavaScript" chapter.
+
+React projects rely on JSX format, so we'll enable it through babel.
+
+```
+$ npm i babel-preset-react --save-dev
+```
+
+.babelrc
+```javascript
+{
+  "presets": [
+    "react",
+  ]
+}
+```
+
+### Setting up a React demo
+
+```
+$ npm i react react-dom --save
+$ touch app/ssr.js
+```
+
+app/ssr.js
+```javascript
+const React = require('react');
+const ReactDOM = require('react-dom');
+
+const SSR = <div onClick={() => alert("hello")}>Hello world!</div>;
+
+// Render only on the browser, export otherwise
+if (typeof document === 'undefined') {
+  module.exports = SSR;
+} else {
+  ReactDOM.hydrate(SSR, document.getElementById('app'));
+}
+```
+
+*ES2015 style imports and CommonJS exports cannot be mixed.*
+
+### Configuring webpack
+
+Let's make a separated config just to be tidy.
+
+```
+$ touch webpack.ssr.js
+```
+
+webpack.ssr.js
+```javascript
+const path = require('path');
+const merge = require('webpack-merge');
+const parts = require('./webpack.parts');
+
+const PATHS = {
+  build: path.join(__dirname, 'static'),
+  ssrDemo: path.join(__dirname, 'app', 'ssr.js'),
+};
+
+module.exports = merge([
+  {
+    entry: {
+      index: PATHS.ssrDemo,
+    },
+    output: {
+      path: PATHS.build,
+      filename: '[name].js',
+      libraryTarget: 'umd',
+    },
+  },
+  parts.loadJavaScript({ include: PATHS.ssrDemo }),
+]);
+```
+
+package.json
+```json
+"scripts": {
+  "build:ssr": "webpack --config webpack.ssr.js"
+}
+```
+
+If you run `npm run build:ssr` you'll notice the new file `static/index.js`.
+
+### Setting up a server
+
+```
+$ npm i express --save
+$ touch server.js
+```
+
+server.js
+```javascript
+const express = require('express');
+const { renderToString } = require('react-dom/server');
+const SSR = require('./static');
+
+server(process.env.PORT || 8080);
+
+function server(port) {
+  const app = express();
+
+  app.use(express.static('static'));
+  app.get('/', (req, res) =>
+    res.status(200).send(renderMarkup(renderToString(SSR))));
+  app.listen(port);
+}
+
+function renderMarkup(html) {
+  return `<!DOCTYPE html>
+  <html>
+    <head>
+      <title>Webpack SSR Demo</title>
+      <meta charset="utf=8" />
+    </head>
+    <body>
+      <div id="app">${html}</div>
+      <script src="./index.js"></script>
+    </body>
+  </html>`;
+}
+```
+
+When you run `node server.js` you should see our hello world at http://localhost:8080.
+
+At this point, every time you change the code, you need to re-run webpack to update what's shown in localhost.
+
+### Watching SSR changes and refreshing the browser
+
+Forcing webpack to run in watch mode:
+```
+$ npm run build:ssr -- --watch
+```
+
+How to make the server aware of changes and how to communicate the changes to the browser?
+
+```
+$ npm i browser-refresh --save-dev
+```
+
+Some updates on server.js are necessary:
+
+server.js
+```javascript
+const express = require('express');
+const { renderToString } = require('react-dom/server');
+const SSR = require('./static');
+
+server(process.env.PORT || 8080);
+
+function server(port) {
+  const app = express();
+
+  app.use(express.static('static'));
+  app.get('/', (req, res) =>
+    res.status(200).send(renderMarkup(renderToString(SSR))));
+  app.listen(port, () => process.send && process.send("online"));
+}
+
+function renderMarkup(html) {
+  return `<!DOCTYPE html>
+  <html>
+    <head>
+      <title>Webpack SSR Demo</title>
+      <meta charset="utf=8" />
+    </head>
+    <body>
+      <div id="app">${html}</div>
+      <script src="${process.env.BROWSER_REFRESH_URL}"></script>
+    </body>
+  </html>`;
+}
+```
+
+Now run the 2 commands in different terminals:
+```
+$ node_modules/.bin/browser-refresh ./server.js
+$ npm run build:ssr -- --watch
+```
+
+To solve some problems, use:
+
+* isomorphic-webpack
+* Next.js
