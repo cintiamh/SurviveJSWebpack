@@ -6,10 +6,14 @@ Original configuration on GitHub: https://github.com/survivejs-demos/webpack-dem
 
 * [Setting up the project](#setting-up-the-project)
 * [Installing webpack](#installing-webpack)
+  - [Composing configuration](#composing-configuration)
 * [Directory structure](#directory-structure)
 * [Adding shortcuts](#adding-shortcuts)
 * [Configuring WDS](#configuring-wds)
-* [Composing configuration](#composing-configuration)
+* [Styling](#styling)
+  - [Loading less](#loading-less)
+  - [Loading sass](#loading-sass)
+* [Separating CSS](#separating-css)
 
 ## Setting up the project
 
@@ -39,6 +43,14 @@ $ npm i html-webpack-plugin -D
 $ npm i webpack-dev-server -D
 ```
 
+### Composing configuration
+
+`webpack-merge` concatenates arrays and merge objects allowing composition.
+
+```
+$ npm i webpack-merge -D
+```
+
 ## Directory structure
 
 * src/
@@ -47,6 +59,7 @@ $ npm i webpack-dev-server -D
 * build/
 * package.json
 * webpack.config.js
+* webpack.parts.js
 
 Creating the file structure:
 ```
@@ -55,6 +68,7 @@ $ mkdir build
 $ touch src/index.js
 $ touch src/component.js
 $ touch webpack.config.js
+$ touch webpack.parts.js
 ```
 
 At a minimum, webpack needs `entry` and `output` fields in config.
@@ -69,6 +83,8 @@ package.json
 }
 ```
 
+Webpack uses `yargs` underneath to make --env work.
+
 Now you can run:
 ```
 $ npm build
@@ -77,11 +93,9 @@ $ npm start
 
 ## Configuring WDS
 
-webpack.config.js
+webpack.parts.js
 ```javascript
-// ...
-module.exports = {
-  // ...
+exports.devServer = ({ host, port } = {}) => ({
   devServer: {
     // Display only errors to reduce the amount of output.
     stats: "errors-only",
@@ -93,20 +107,15 @@ module.exports = {
     //
     // 0.0.0.0 is available to all network devices
     // unlike default `localhost`.
-    host: process.env.HOST, // Defaults to `localhost`
-    port: process.env.PORT, // Defaults to 8080
+    host, // Defaults to `localhost`
+    port, // Defaults to 8080
     // overlay: true is equivalent
     overlay: {
       errors: true,
-      warinings: true,
+      warnings: true,
     },
   },
-};
-```
-
-After this change, you can run:
-```
-$ PORT=3000 npm start
+});
 ```
 
 If you access the server through http://localhost:8080/webpack-dev-server/, WDS provides status information at the top.
@@ -116,11 +125,110 @@ Find your machine's ip:
 $ ifconfig | grep inet
 ```
 
-## Composing configuration
+## Styling
 
-`webpack-merge` concatenates arrays and merge objects allowing composition.
+* `css-loader`: goes through possible `@import` and `url()` (treating them like a regular ES2015 `import`) - only for internal resources.
+* `style-loader`: injects the styling through a `style` element.
 
 ```
-$ npm i webpack-merge -D
-$ touch webpack.parts.js
+$ npm i css-loader style-loader -D
 ```
+
+webpack.parts.js
+```javascript
+exports.loadCSS = ({ include, exclude } = {}) => ({
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        include,
+        exclude,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
+});
+```
+
+webpack.config.js
+```javascript
+const commonConfig = merge([
+  // ...
+  parts.loadCSS(),
+]);
+```
+
+Loading from `node_modules`:
+```css
+@import "~bootstrap/less/bootstrap";
+```
+
+The `~` tells webpack that it should perform a lookup against `node_modules`.
+
+### Loading less
+
+```
+$ npm i less-loader
+```
+
+webpack.parts.js
+```javascript
+{
+  test: /\.less$/,
+  use: ['style-loader', 'css-loader', 'less-loader'],
+},
+```
+
+### Loading sass
+
+```
+$ npm i sass-loader
+```
+
+webpack.parts.js
+```javascript
+{
+  test: /\.scss$/,
+  use: ['style-loader', 'css-loader', 'sass-loader'],
+},
+```
+
+## Separating CSS
+
+```
+$ npm i extract-text-webpack-plugin -D
+```
+
+`ExtractTextPlugin` includes a loader, `ExtractTextPlugin.extract` that marks the assets to be extracted.
+* `use`: process contents from initial chunks.
+* `fallback`: uses fallback for the rest.
+
+webpack.parts.js
+```javascript
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+exports.extractCSS = ({ include, exclude, use }) => {
+  const plugin = new ExtractTextPlugin({
+    allChunks: true,
+    filename: '[name].css',
+  });
+  return {
+    module: {
+      rules: [
+        {
+          test:/\.css$/,
+          include,
+          exclude,
+          use: plugin.extract({
+            use,
+            fallback: 'style-loader',
+          }),
+        },
+      ],
+    },
+    plugins: [plugin],
+  };
+};
+```
+
+`plugin.extract` calls against different file types, allowing you to aggregate them to a single CSS file.
