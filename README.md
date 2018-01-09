@@ -11,3 +11,5 @@ Notes from book.
 7. [Techniques](07_Techniques.md)
 8. [Packages](08_Packages.md)
 9. [Extending](09_Extending.md)
+
+[Getting Started](GettingStarted.md)
