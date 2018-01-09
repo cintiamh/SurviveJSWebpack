@@ -19,6 +19,7 @@ Original configuration on GitHub: https://github.com/survivejs-demos/webpack-dem
 * [Loading assets](#loading-assets)
   - [Loading images](#loading-images)
   - [Loading fonts](#loading-fonts)
+  - [Loading JavaScript](#loading-javascript)
 
 ## Setting up the project
 
@@ -400,3 +401,90 @@ const developmentConfig = merge([
 To compress your images, use `image-webpack-loader`, `svgo-loader`, or `imagemin-webpack-plugin`.
 
 ### Loading fonts
+
+* Google Fonts: https://www.npmjs.com/package/google-fonts-webpack-plugin
+* Font awesome: https://www.npmjs.com/package/font-awesome
+
+If you haven't yet, you'll need `file-loader`
+```
+$ npm i file-loader -D
+```
+
+webpack.parts.js
+```javascript
+exports.loadFonts = ({ include, exclude, options } = {}) => ({
+  module: {
+    rules: [
+      {
+        test: /\.(eot|ttf|woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        include,
+        exclude,
+        use: {
+          loader: 'file-loader',
+          options,
+        },
+      },
+    ],
+  },
+});
+```
+
+webpack.config.js
+```javascript
+const commonConfig = merge([
+  // ...
+  parts.loadFonts({
+    options: {
+      name: '[name].[ext]',
+    },
+  }),
+]);
+```
+
+### Loading JavaScript
+
+#### Setting up `babel-loader`
+
+```
+$ npm i babel-loader babel-core -D
+$ npm i babel-preset-env -D
+$ touch .babelrc
+```
+
+webpack.parts.js
+```javascript
+exports.loadJavaScript = ({ include, exclude } = {}) => ({
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        include,
+        exclude,
+        use: 'babel-loader'
+      },
+    ],
+  },
+});
+```
+
+webpack.config.js
+```javascript
+const commonConfig = merge([
+  // ...
+  parts.loadJavaScript({ include: PATHS.app }),
+]);
+```
+
+.babelrc
+```javascript
+{
+  "presets": [
+    [
+      "env",
+      {
+        "modules": false
+      }
+    ]
+  ]
+}
+```
