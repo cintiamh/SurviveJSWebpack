@@ -16,6 +16,9 @@ Original configuration on GitHub: https://github.com/survivejs-demos/webpack-dem
 * [Separating CSS](#separating-css)
 * [Setting up autoprefixing](#setting-up-autoprefixing)
 * [Eliminating unused CSS](#eliminating-unused-css)
+* [Loading assets](#loading-assets)
+  - [Loading images](#loading-images)
+  - [Loading fonts](#loading-fonts)
 
 ## Setting up the project
 
@@ -312,3 +315,88 @@ const productionConfig = merge([
   }),
 ]);
 ```
+
+## Loading assets
+
+Webpack's loaders are always evaluated from right to left and from bottom to top.
+
+### Loading images
+
+#### Setting up `url-loader`
+
+`url-loader` emits your images as base64 strings within your JavaScript bundle.
+
+It comes with a `limit` option that can be used to defer image generation to file-loader after a certain limit's reached.
+
+```javascript
+{
+  test: /\.(jpg|png|svg)$/,
+  use: {
+    loader: 'url-loader',
+    options: {
+      limit: 25000,
+    },
+  },
+},
+```
+
+#### Setting up `file-loader`
+
+By default, `file-loader` returns the MD5 hash of the file's contents with the original extension.
+
+```javascript
+{
+  test: /\.(jpg|png|svg)$/,
+  use: {
+    loader: 'file-loader',
+    options: {
+      name: '[path][name].[hash].[ext]',
+    },
+  },
+},
+```
+
+```
+$ npm i file-loader url-loader -D
+```
+
+webpack.parts.js
+```javascript
+exports.loadImages = ({ include, exclude, options } = {}) => ({
+  module: {
+    rules: [
+      {
+        test: /\.(png|jpg|svg)$/,
+        include,
+        exclude,
+        use: {
+          loader: 'url-loader',
+          options,
+        },
+      },
+    ],
+  },
+});
+```
+
+wepback.config.js
+```javascript
+const productionConfig = merge([
+  // ...
+  parts.loadImages({
+    options: {
+      limit: 15000,
+      name: '[name].[ext]',
+    },
+  }),
+]);
+
+const developmentConfig = merge([
+  // ...
+  parts.loadImages(),
+]);
+```
+
+To compress your images, use `image-webpack-loader`, `svgo-loader`, or `imagemin-webpack-plugin`.
+
+### Loading fonts
