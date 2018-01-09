@@ -15,6 +15,7 @@ Original configuration on GitHub: https://github.com/survivejs-demos/webpack-dem
   - [Loading sass](#loading-sass)
 * [Separating CSS](#separating-css)
 * [Setting up autoprefixing](#setting-up-autoprefixing)
+* [Eliminating unused CSS](#eliminating-unused-css)
 
 ## Setting up the project
 
@@ -281,4 +282,33 @@ const productionConfig = merge([
 > 1% # Browser usage over 1%
 Last 2 versions # Or last two versions
 IE 8 # Or IE 8
+```
+
+## Eliminating unused CSS
+
+### Enabling PurifyCSS
+
+```
+$ npm i glob purifycss-webpack purify-css -D
+```
+
+webpack.parts.js
+```javascript
+const PurifyCSSPlugin = require('purifycss-webpack');
+
+exports.purifyCSS = ({ paths }) => ({
+  plugins: [new PurifyCSSPlugin({ paths })],
+});
+```
+
+webpack.config.js
+```javascript
+const glob = require('glob');
+
+const productionConfig = merge([
+  // The order matters, CSS extraction has to happen before purifying
+  parts.purifyCSS({
+    paths: glob.sync(`${PATHS.app}/**/*.js`, { nodir: true }),
+  }),
+]);
 ```
