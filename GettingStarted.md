@@ -14,6 +14,7 @@ Original configuration on GitHub: https://github.com/survivejs-demos/webpack-dem
   - [Loading less](#loading-less)
   - [Loading sass](#loading-sass)
 * [Separating CSS](#separating-css)
+* [Setting up autoprefixing](#setting-up-autoprefixing)
 
 ## Setting up the project
 
@@ -87,7 +88,7 @@ Webpack uses `yargs` underneath to make --env work.
 
 Now you can run:
 ```
-$ npm build
+$ npm run build
 $ npm start
 ```
 
@@ -232,3 +233,52 @@ exports.extractCSS = ({ include, exclude, use }) => {
 ```
 
 `plugin.extract` calls against different file types, allowing you to aggregate them to a single CSS file.
+
+webpack.config.js
+```javascript
+const productionConfig = merge([
+  // for production we'll have a separated CSS file.
+  parts.extractCSS({
+    use: 'css-loader',
+  }),
+]);
+
+const developmentConfig = merge([
+  // ...
+  // For development, we'll have CSS into JS because it's faster to reload.
+  parts.loadCSS(),
+]);
+```
+
+## Setting up autoprefixing
+
+```
+$ npm i postcss-loader autoprefixer -D
+$ touch .browserslistrc
+```
+
+webpack.parts.js
+```javascript
+exports.autoprefix = () => ({
+  loader: 'postcss-loader',
+  options: {
+    plugins: () => [require('autoprefixer')()],
+  },
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = merge([
+  parts.extractCSS({
+    use: ['css-loader', parts.autoprefix()],
+  }),
+]);
+```
+
+.browserslistrc
+```
+> 1% # Browser usage over 1%
+Last 2 versions # Or last two versions
+IE 8 # Or IE 8
+```
