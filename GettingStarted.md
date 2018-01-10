@@ -20,6 +20,8 @@ Original configuration on GitHub: https://github.com/survivejs-demos/webpack-dem
   - [Loading images](#loading-images)
   - [Loading fonts](#loading-fonts)
   - [Loading JavaScript](#loading-javascript)
+* [Building](#building)
+  - [Source maps](#source-maps)
 
 ## Setting up the project
 
@@ -488,3 +490,38 @@ const commonConfig = merge([
   ]
 }
 ```
+
+## Building
+
+### Source maps
+
+Documentation: https://webpack.js.org/configuration/devtool/#devtool
+
+webpack.parts.js
+```javascript
+exports.generateSourceMaps = ({ type }) => ({
+  devtool: type,
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = merge([
+  parts.generateSourceMaps({ type: 'source-map' }),
+  // ...
+]);
+
+const developmentConfig = merge([
+  {
+    output: {
+      devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]',
+    },
+  },
+  parts.generateSourceMaps({ type: 'cheap-module-eval-source-map' }),
+  // ...
+]);
+```
+
+If you are using `UglifyJsPlugin` you need to enable `sourceMap: true` for the plugin.
+
+Alternative plugin: https://webpack.js.org/plugins/source-map-dev-tool-plugin/
