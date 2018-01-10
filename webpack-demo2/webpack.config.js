@@ -34,6 +34,7 @@ const commonConfig = merge([
 ]);
 
 const productionConfig = merge([
+  parts.clean(PATHS.build),
   parts.generateSourceMaps({ type: 'source-map' }),
   parts.extractCSS({
     use: ['css-loader', parts.autoprefix()],
@@ -47,6 +48,13 @@ const productionConfig = merge([
       name: '[name].[ext]',
     },
   }),
+  parts.extractBundles([
+    {
+      name: 'vendor',
+      minChunks: ({ resource }) => /node_modules/.test(resource),
+    },
+  ]),
+  parts.attachRevision(),
 ]);
 
 const developmentConfig = merge([

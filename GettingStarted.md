@@ -22,6 +22,9 @@ Original configuration on GitHub: https://github.com/survivejs-demos/webpack-dem
   - [Loading JavaScript](#loading-javascript)
 * [Building](#building)
   - [Source maps](#source-maps)
+  - [Bundle splitting](#bundle-splitting)
+  - [Tidying up](#tidying-up)
+* [Optimizing](#optimizing)
 
 ## Setting up the project
 
@@ -525,3 +528,90 @@ const developmentConfig = merge([
 If you are using `UglifyJsPlugin` you need to enable `sourceMap: true` for the plugin.
 
 Alternative plugin: https://webpack.js.org/plugins/source-map-dev-tool-plugin/
+
+### Bundle splitting
+
+#### Setting up a vendor bundle
+
+CommonsChunkPlugin: https://webpack.js.org/plugins/commons-chunk-plugin/
+
+webpack.parts.js
+```javascript
+const webpack = require('webpack');
+// ...
+exports.extractBundles = bundles => ({
+  plugins: bundles.map(
+    bundle => new webpack.optimize.CommonsChunkPlugin(bundle)
+  ),
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = merge([
+  parts.extractBundles([
+    {
+      name: 'vendor',
+      minChunks: ({ resource }) => /node_modules/.test(resource),
+    },
+  ]),
+]);
+```
+
+### Tidying up
+
+#### Cleaning the build directory
+
+```
+$ npm i clean-webpack-plugin -D
+```
+
+webpack.parts.js
+```javascript
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+// ...
+exports.clean = path => ({
+  plugins: [new CleanWebpackPlugin([path])],
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = merge([
+  parts.clean(PATHS.build),
+  // ...
+]);
+```
+
+#### Attaching a revision to the build
+
+```
+$ npm i git-revision-webpack-plugin -D
+```
+
+webpack.parts.js
+```javascript
+const GitRevisionPlugin = require('git-revision-webpack-plugin');
+// ...
+exports.attachRevision = () => ({
+  plugins: [
+    new webpack.BannerPlugin({
+      banner: new GitRevisionPlugin().version(),
+    }),
+  ],
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = merge([
+  // ...
+  parts.attachRevision(),
+]);
+```
+
+#### Copying files
+
+`copy-webpack-plugin`
+
+## Optimizing
