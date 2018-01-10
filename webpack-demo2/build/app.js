@@ -1,3 +1,0 @@
-/*! 994e4a5 */
-webpackJsonp([0],{14:function(e,n,t){"use strict";var o=t(15);t.n(o);n.a=function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"Hello world",n=document.createElement("div");return n.className="pure-button",n.innerHTML=e,n}},15:function(e,n){},6:function(e,n,t){"use strict";Object.defineProperty(n,"__esModule",{value:!0});var o=t(7),c=(t.n(o),t(8)),r=(t.n(c),t(9)),u=(t.n(r),t(14));document.body.appendChild(Object(u.a)())}},[6]);
-//# sourceMappingURL=app.js.map
