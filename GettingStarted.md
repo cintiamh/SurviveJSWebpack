@@ -25,6 +25,7 @@ Original configuration on GitHub: https://github.com/survivejs-demos/webpack-dem
   - [Bundle splitting](#bundle-splitting)
   - [Tidying up](#tidying-up)
 * [Optimizing](#optimizing)
+  - [Minifying](#minifying)
 
 ## Setting up the project
 
@@ -585,6 +586,8 @@ const productionConfig = merge([
 
 #### Attaching a revision to the build
 
+Adds the git revision number at the top of each file.
+
 ```
 $ npm i git-revision-webpack-plugin -D
 ```
@@ -615,3 +618,68 @@ const productionConfig = merge([
 `copy-webpack-plugin`
 
 ## Optimizing
+
+### Minifying
+
+#### Minifying JavaScript
+
+```
+$ npm i uglifyjs-webpack-plugin -D
+```
+
+webpack.parts.js
+```javascript
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// ...
+exports.minifyJavaScript = () => ({
+  plugins: [new UglifyJsPlugin()],
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = merge([
+  parts.clean(PATHS.build),
+  parts.minifyJavaScript(),
+  // ...
+]);
+```
+
+#### Minifying CSS
+
+```
+$ npm i optimize-css-assets-webpack-plugin cssnano -D
+```
+
+webpack.parts.js
+```javascript
+const OptimizeCSSAssetPlugin = require('optimize-css-assets-webpack-plugin');
+const cssnano = require('cssnano');
+// ...
+exports.minifyCSS = ({ options }) => ({
+  plugins: [
+    new OptimizeCSSAssetPlugin({
+      cssProcessor: cssnano,
+      cssProcessorOptions: options,
+      canPrint: false,
+    }),
+  ],
+});
+```
+
+webpack.config.js
+```javascript
+const productionConfig = merge([
+  // ...
+  parts.minifyJavaScript(),
+  parts.minifyCSS({
+    options: {
+      discardComments: {
+        removeAll: true,
+      },
+      safe: true,
+    },
+  }),
+  // ...
+]);
+```
