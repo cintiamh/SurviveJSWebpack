@@ -26,6 +26,7 @@ Original configuration on GitHub: https://github.com/survivejs-demos/webpack-dem
   - [Tidying up](#tidying-up)
 * [Optimizing](#optimizing)
   - [Minifying](#minifying)
+  - [Adding hashes to filenames](#adding-hashes-to-filenames)
 
 ## Setting up the project
 
@@ -550,10 +551,14 @@ exports.extractBundles = bundles => ({
 webpack.config.js
 ```javascript
 const productionConfig = merge([
+  {
+    entry: {
+      vendor: ['react'],
+    },
+  },
   parts.extractBundles([
     {
       name: 'vendor',
-      minChunks: ({ resource }) => /node_modules/.test(resource),
     },
   ]),
 ]);
@@ -680,6 +685,78 @@ const productionConfig = merge([
       safe: true,
     },
   }),
+  // ...
+]);
+```
+
+### Adding hashes to filenames
+
+webpack.config.js
+```javascript
+const commonConfig = merge([
+  // ...
+  parts.loadFonts({
+    options: {
+      name: '[name].[hash:8].[ext]',
+    },
+  }),
+  // ...
+]);
+
+const productionConfig = merge([
+  // ...
+  parts.loadImages({
+    options: {
+      limit: 15000,
+      name: '[name].[has:8].[ext]',
+    },
+  }),
+  // ...
+]);
+```
+
+webpack.parts.js
+```javascript
+exports.extractCSS = ({ include, exclude, use }) => {
+  const plugin = new ExtractTextPlugin({
+    allChunks: true,
+    filename: '[name].[contenthash:8].css',
+  });
+  // ...
+};
+```
+
+#### Enabling `NamedModulesPlugin`
+
+webpack.config.js
+```javascript
+const webpack = require('webpack');
+// ...
+const commonConfig = merge([
+  {
+    // ...
+    plugins: [
+      // ...
+      new webpack.NamedModulesPlugin(),
+    ],
+  },
+  // ...
+]);
+```
+
+### Separating a manifest
+
+webpack.config.js
+```javascript
+const productionConfig = merge([
+  // ...
+  parts.extractBundles([
+    // ...
+    {
+      name: 'manifest',
+      minChunks: Infinity,
+    },
+  ]),
   // ...
 ]);
 ```

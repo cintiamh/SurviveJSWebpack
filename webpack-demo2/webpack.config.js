@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const merge = require('webpack-merge');
 const glob = require('glob');
+const webpack = require('webpack');
 
 const parts = require('./webpack.parts');
 
@@ -23,17 +24,23 @@ const commonConfig = merge([
       new HtmlWebpackPlugin({
         title: 'Webpack demo',
       }),
+      new webpack.NamedModulesPlugin(),
     ],
   },
   parts.loadFonts({
     options: {
-      name: '[name].[ext]',
+      name: '[name].[hash:8].[ext]',
     },
   }),
   parts.loadJavaScript({ include: PATHS.app }),
 ]);
 
 const productionConfig = merge([
+  {
+    entry: {
+      vendor: ['react'],
+    },
+  },
   parts.clean(PATHS.build),
   parts.minifyJavaScript(),
   parts.minifyCSS({
@@ -54,13 +61,16 @@ const productionConfig = merge([
   parts.loadImages({
     options: {
       limit: 15000,
-      name: '[name].[ext]',
+      name: '[name].[hash:8].[ext]',
     },
   }),
   parts.extractBundles([
     {
       name: 'vendor',
-      minChunks: ({ resource }) => /node_modules/.test(resource),
+    },
+    {
+      name: 'manifest',
+      minChunks: Infinity,
     },
   ]),
   parts.attachRevision(),
